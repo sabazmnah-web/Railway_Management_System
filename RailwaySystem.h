@@ -4,7 +4,6 @@
 #include <iostream>
 #include <string>
 
-
 class Passenger {
 public:
     std::string name;
@@ -17,7 +16,6 @@ public:
     Passenger(std::string n, std::string occ, int a, char g, int tID);
 };
 
-
 template <typename T>
 class Node {
 public:
@@ -28,7 +26,6 @@ public:
         next = NULL;
     }
 };
-
 
 class Train {
 public:

@@ -96,7 +96,8 @@ private:
 public:
     void addTrain(int id, std::string div, int depTime, int fSeats, int mSeats);
     void showTrains();
-    void searchTrain(std::string div);
+    void searchByIdOrDestination(int id, std::string div);
+    void searchByTimeOrDestination(int depTime, std::string div);
     void bookTicket(Passenger p);
     void cancelTicket(std::string name, int tID);
     void showPassengers();

@@ -16,7 +16,6 @@ Passenger::Passenger(std::string n, std::string occ, int a, char g, int tID) {
     trainID = tID;
 }
 
-
 Train::Train() {
     trainID = 0;
     division = "";
@@ -32,7 +31,6 @@ Train::Train(int id, std::string div, int depTime, int fSeats, int mSeats) {
     femaleSeats = fSeats;
     maleSeats = mSeats;
 }
-
 
 WaitingPriorityQueue::WaitingPriorityQueue() {
     count = 0;
@@ -80,7 +78,6 @@ void WaitingPriorityQueue::displayWaitingList() {
     }
 }
 
-
 PassengerTree::PassengerTree() {
     root = NULL;
 }
@@ -122,7 +119,6 @@ BSTNode* PassengerTree::findMin(BSTNode* node) {
 BSTNode* PassengerTree::deleteRec(BSTNode* node, std::string name, int tID, bool &found, Passenger &deletedPassenger) {
     if (node == NULL) return NULL;
 
-
     if (node->passenger.name == name && node->passenger.trainID == tID) {
         found = true;
         deletedPassenger = node->passenger;
@@ -137,13 +133,11 @@ BSTNode* PassengerTree::deleteRec(BSTNode* node, std::string name, int tID, bool
             return temp;
         }
 
-
         BSTNode* temp = findMin(node->right);
         node->passenger = temp->passenger;
         node->right = deleteRec(node->right, temp->passenger.name, temp->passenger.trainID, found, deletedPassenger);
         return node;
     }
-
 
     node->left = deleteRec(node->left, name, tID, found, deletedPassenger);
     if (!found) {
@@ -166,7 +160,6 @@ void PassengerTree::display() {
     printInOrder(root);
 }
 
-
 TrainList::TrainList() {
     head = NULL;
 }
@@ -180,10 +173,18 @@ TrainList::~TrainList() {
     }
 }
 
+// Updated to insert nodes at the end (tail) of the list
 void TrainList::insert(Train t) {
     Node<Train>* newNode = new Node<Train>(t);
-    newNode->next = head;
-    head = newNode;
+    if (head == NULL) {
+        head = newNode;
+    } else {
+        Node<Train>* temp = head;
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = newNode;
+    }
 }
 
 Node<Train>* TrainList::getHead() {
@@ -205,7 +206,6 @@ void TrainList::display() {
     }
 }
 
-
 void RailwaySystem::addTrain(int id, std::string div, int depTime, int fSeats, int mSeats) {
     if (id >= 1 && id <= 20) {
         trains.insert(Train(id, div, depTime, fSeats, mSeats));
@@ -216,15 +216,16 @@ void RailwaySystem::showTrains() {
     trains.display();
 }
 
-void RailwaySystem::searchTrain(std::string div) {
+void RailwaySystem::searchByIdOrDestination(int id, std::string div) {
     Node<Train>* temp = trains.getHead();
     bool found = false;
     while (temp != NULL) {
-        if (temp->data.division == div) {
+        if (temp->data.trainID == id || temp->data.division == div) {
             int hours = temp->data.departureTime / 100;
             int mins = temp->data.departureTime % 100;
 
             std::cout << "Train Found! ID: " << temp->data.trainID
+                      << " | Destination: " << temp->data.division
                       << " | Departure: " << (hours < 10 ? "0" : "") << hours << ":" << (mins < 10 ? "0" : "") << mins
                       << " | Female Seats: " << temp->data.femaleSeats
                       << " | Male Seats: " << temp->data.maleSeats << "\n";
@@ -233,7 +234,29 @@ void RailwaySystem::searchTrain(std::string div) {
         temp = temp->next;
     }
     if (!found) {
-        std::cout << "No trains found for destination: " << div << "\n";
+        std::cout << "No trains found matching the given Train ID or Destination.\n";
+    }
+}
+
+void RailwaySystem::searchByTimeOrDestination(int depTime, std::string div) {
+    Node<Train>* temp = trains.getHead();
+    bool found = false;
+    while (temp != NULL) {
+        if (temp->data.departureTime == depTime || temp->data.division == div) {
+            int hours = temp->data.departureTime / 100;
+            int mins = temp->data.departureTime % 100;
+
+            std::cout << "Train Found! ID: " << temp->data.trainID
+                      << " | Destination: " << temp->data.division
+                      << " | Departure: " << (hours < 10 ? "0" : "") << hours << ":" << (mins < 10 ? "0" : "") << mins
+                      << " | Female Seats: " << temp->data.femaleSeats
+                      << " | Male Seats: " << temp->data.maleSeats << "\n";
+            found = true;
+        }
+        temp = temp->next;
+    }
+    if (!found) {
+        std::cout << "No trains found matching the given Departure Time or Destination.\n";
     }
 }
 
@@ -270,7 +293,6 @@ void RailwaySystem::cancelTicket(std::string name, int tID) {
     bool isCancelled = passengerRecords.removePassenger(name, tID, deletedPassenger);
 
     if (isCancelled) {
-
         Node<Train>* temp = trains.getHead();
         while (temp != NULL) {
             if (temp->data.trainID == tID) {

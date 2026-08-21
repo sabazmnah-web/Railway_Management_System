@@ -4,7 +4,6 @@
 #include <iostream>
 #include <string>
 
-// Passenger Class
 class Passenger {
 public:
     std::string name;
@@ -29,7 +28,6 @@ public:
     Train(int id, std::string div, int depTime, int fSeats, int mSeats);
 };
 
-// Linked List Node for Trains
 class TrainNode {
 public:
     Train data;
@@ -40,7 +38,6 @@ public:
     }
 };
 
-// Linked List Node for Stack
 class StackNode {
 public:
     Passenger data;
@@ -51,7 +48,6 @@ public:
     }
 };
 
-// Linked List Node for Confirmed Passengers
 class PassengerNode {
 public:
     Passenger data;

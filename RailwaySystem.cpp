@@ -86,10 +86,10 @@ void RailwaySystem::showTrainsByID()
         int h=tempArr[i].departureTime/100;
         int m=tempArr[i].departureTime%100;
         std::cout<<"Train ID: "<<tempArr[i].trainID
-                  <<"Destination: "<<tempArr[i].division
-                  << "Departure: " <<(h<10?"0":"")<<h<<":"<<(m<10?"0":"")<< m
-                  << "Female Seats: " <<tempArr[i].femaleSeats
-                  << "Male Seats: " <<tempArr[i].maleSeats<<"\n";
+                  <<"| Destination: "<<tempArr[i].division
+                  <<" | Departure: " <<(h<10?"0":"")<<h<<":"<<(m<10?"0":"")<< m
+                  <<" | Female Seats: " <<tempArr[i].femaleSeats
+                  <<" | Male Seats: " <<tempArr[i].maleSeats<<"\n";
     }
 }
 void RailwaySystem::showTrainsByTime() 
@@ -118,11 +118,11 @@ void RailwaySystem::showTrainsByTime()
     {
         int h=tempArr[i].departureTime / 100;
         int m=tempArr[i].departureTime % 100;
-        std::cout << "Departure: "<< (h<10 ? "0":"")<<h<<":"<<(m<10 ? "0":"")<<m
-                  << "Train ID: "<< tempArr[i].trainID
-                  << "Destination: "<< tempArr[i].division
-                  << "Female Seats: "<< tempArr[i].femaleSeats
-                  << "Male Seats: "<< tempArr[i].maleSeats << "\n";
+        std::cout << "| Departure: "<< (h<10 ? "0":"")<<h<<":"<<(m<10 ? "0":"")<<m
+                  << " | Train ID: "<< tempArr[i].trainID
+                  << " | Destination: "<< tempArr[i].division
+                  << " | Female Seats: "<< tempArr[i].femaleSeats
+                  << " | Male Seats: "<< tempArr[i].maleSeats << "\n";
     }
 }
 void RailwaySystem::searchByTimeOrDestination(int depTime, std::string div) {
@@ -135,11 +135,11 @@ void RailwaySystem::searchByTimeOrDestination(int depTime, std::string div) {
             int h=temp->data.departureTime / 100;
             int m=temp->data.departureTime % 100;
 
-            std::cout << "Train Found! ID: " << temp->data.trainID
-                      << "Destination: " << temp->data.division
-                      << "Departure: " << (h < 10 ? "0" : "") << h << ":" << (m < 10 ? "0" : "") << m
-                      << "Female Seats: " << temp->data.femaleSeats
-                      << "Male Seats: " << temp->data.maleSeats << "\n";
+            std::cout << "| Train Found! ID: " << temp->data.trainID
+                      << " | Destination: " << temp->data.division
+                      << " | Departure: " << (h < 10 ? "0" : "") << h << ":" << (m < 10 ? "0" : "") << m
+                      << " | Female Seats: " << temp->data.femaleSeats
+                      << " | Male Seats: " << temp->data.maleSeats << "\n";
             found=true;
         }
         temp=temp->next;
@@ -264,11 +264,11 @@ void RailwaySystem::showPassengers()
     }
     while (temp!=NULL) 
     {
-        std::cout <<"Name: "<< temp->data.name
-                  <<"Age: "<< temp->data.age
-                  <<"Occupation: "<<temp->data.occupation
-                  <<"Gender: "<<temp->data.gender
-                  <<"Train ID: "<<temp->data.trainID<<"\n";
+        std::cout <<"| Name: "<< temp->data.name
+                  <<" | Age: "<< temp->data.age
+                  <<" | Occupation: "<<temp->data.occupation
+                  <<" | Gender: "<<temp->data.gender
+                  <<" | Train ID: "<<temp->data.trainID<<"\n";
         temp=temp->next;
     }
     std::cout<<"\nWAITING LIST\n";
@@ -280,10 +280,10 @@ void RailwaySystem::showPassengers()
     {
         for(int i=0;i<queueCount;i++) 
         {
-            std::cout <<"Waiting Position" << (i + 1)
-                      <<"Name: "<< waitingQueue[i].name
-                      <<"Age: "<< waitingQueue[i].age
-                      <<"Train ID: "<< waitingQueue[i].trainID<<"\n";
+            std::cout <<"| Waiting Position" << (i + 1)
+                      <<" | Name: "<< waitingQueue[i].name
+                      <<" | Age: "<< waitingQueue[i].age
+                      <<" | Train ID: "<< waitingQueue[i].trainID<<"\n";
         }
     }
 }
@@ -298,10 +298,10 @@ void RailwaySystem::showCancellationHistory()
     StackNode*temp=stackTop;
     while(temp!=NULL) 
     {
-        std::cout << "Cancelled Passenger: " << temp->data.name
-                  << "Train ID: "<< temp->data.trainID
-                  << "Age: "<< temp->data.age
-                  << "Occupation: "<< temp->data.occupation<< "\n";
+        std::cout << "| Cancelled Passenger: " << temp->data.name
+                  << " | Train ID: "<< temp->data.trainID
+                  << " | Age: "<< temp->data.age
+                  << " | Occupation: "<< temp->data.occupation<< "\n";
         temp=temp->next;
     }
 }

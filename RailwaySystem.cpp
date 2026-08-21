@@ -32,9 +32,121 @@ Train::Train(int id, std::string div, int depTime, int fSeats, int mSeats) {
     maleSeats = mSeats;
 }
 
-WaitingPriorityQueue::WaitingPriorityQueue() {
-    count = 0;
+SortedArrayList::SortedArrayList() { count = 0; }
+
+void SortedArrayList::insert(Train t) {
+    if (count >= 50) return;
+    int i = count - 1;
+    // Keep array sorted by trainID
+    while (i >= 0 && arr[i].trainID > t.trainID) {
+        arr[i + 1] = arr[i];
+        i--;
+    }
+    arr[i + 1] = t;
+    count++;
 }
+
+Train* SortedArrayList::findByID(int id) {
+    for (int i = 0; i < count; i++) {
+        if (arr[i].trainID == id) return &arr[i];
+    }
+    return NULL;
+}
+
+void SortedArrayList::display() {
+    for (int i = 0; i < count; i++) {
+        int hours = arr[i].departureTime / 100;
+        int mins = arr[i].departureTime % 100;
+        std::cout << "Train ID: " << arr[i].trainID
+                  << " | Destination: " << arr[i].division
+                  << " | Departure: " << (hours < 10 ? "0" : "") << hours << ":" << (mins < 10 ? "0" : "") << mins
+                  << " | Female Seats: " << arr[i].femaleSeats
+                  << " | Male Seats: " << arr[i].maleSeats << "\n";
+    }
+}
+
+int SortedArrayList::getSize() { return count; }
+Train SortedArrayList::getAt(int index) { return arr[index]; }
+
+SortedLinkedList::SortedLinkedList() { head = NULL; }
+
+SortedLinkedList::~SortedLinkedList() {
+    SortedLLNode* temp;
+    while (head != NULL) {
+        temp = head;
+        head = head->next;
+        delete temp;
+    }
+}
+
+void SortedLinkedList::insertSortedByTime(Train t) {
+    SortedLLNode* newNode = new SortedLLNode(t);
+    if (head == NULL || head->data.departureTime >= t.departureTime) {
+        newNode->next = head;
+        head = newNode;
+        return;
+    }
+    SortedLLNode* current = head;
+    while (current->next != NULL && current->next->data.departureTime < t.departureTime) {
+        current = current->next;
+    }
+    newNode->next = current->next;
+    current->next = newNode;
+}
+
+void SortedLinkedList::display() {
+    SortedLLNode* temp = head;
+    while (temp != NULL) {
+        int hours = temp->data.departureTime / 100;
+        int mins = temp->data.departureTime % 100;
+        std::cout << "Departure: " << (hours < 10 ? "0" : "") << hours << ":" << (mins < 10 ? "0" : "") << mins
+                  << " | Train ID: " << temp->data.trainID
+                  << " | Destination: " << temp->data.division << "\n";
+        temp = temp->next;
+    }
+}
+
+CancellationStack::CancellationStack() { top = NULL; }
+
+CancellationStack::~CancellationStack() {
+    while (!isEmpty()) {
+        pop();
+    }
+}
+
+void CancellationStack::push(Passenger p) {
+    StackNode* newNode = new StackNode(p);
+    newNode->next = top;
+    top = newNode;
+}
+
+Passenger CancellationStack::pop() {
+    if (isEmpty()) return Passenger();
+    StackNode* temp = top;
+    Passenger p = temp->data;
+    top = top->next;
+    delete temp;
+    return p;
+}
+
+bool CancellationStack::isEmpty() { return top == NULL; }
+
+void CancellationStack::displayHistory() {
+    if (isEmpty()) {
+        std::cout << "No cancellation history available.\n";
+        return;
+    }
+    std::cout << "\nCancellation History\n";
+    StackNode* temp = top;
+    while (temp != NULL) {
+        std::cout << "Cancelled Passenger: " << temp->data.name
+                  << " | Train ID: " << temp->data.trainID
+                  << " | Age: " << temp->data.age << "\n";
+        temp = temp->next;
+    }
+}
+
+WaitingPriorityQueue::WaitingPriorityQueue() { count = 0; }
 
 void WaitingPriorityQueue::enqueue(Passenger p) {
     if (count >= 50) return;
@@ -57,9 +169,7 @@ Passenger WaitingPriorityQueue::dequeue() {
     return p;
 }
 
-bool WaitingPriorityQueue::isEmpty() {
-    return count == 0;
-}
+bool WaitingPriorityQueue::isEmpty() { return count == 0; }
 
 void WaitingPriorityQueue::displayWaitingList() {
     if (isEmpty()) {
@@ -71,16 +181,11 @@ void WaitingPriorityQueue::displayWaitingList() {
         std::cout << "Waiting Position #" << (i + 1)
                   << " | Name: " << arr[i].name
                   << " | Age: " << arr[i].age
-                  << " | Occupation: " << arr[i].occupation
-                  << " | Train ID: " << arr[i].trainID
-                  << " | Target: " << (arr[i].gender == 'F' || arr[i].gender == 'f' ? "Female Compartment" : "Male General Compartment")
-                  << "\n";
+                  << " | Train ID: " << arr[i].trainID << "\n";
     }
 }
 
-PassengerTree::PassengerTree() {
-    root = NULL;
-}
+PassengerTree::PassengerTree() { root = NULL; }
 
 BSTNode* PassengerTree::insertRec(BSTNode* node, Passenger p) {
     if (node == NULL) return new BSTNode(p);
@@ -95,24 +200,16 @@ BSTNode* PassengerTree::insertRec(BSTNode* node, Passenger p) {
 void PassengerTree::printInOrder(BSTNode* node) {
     if (node == NULL) return;
     printInOrder(node->left);
-
     std::cout << "Name: " << node->passenger.name
               << " | Age: " << node->passenger.age
               << " | Occupation: " << node->passenger.occupation
               << " | Gender: " << node->passenger.gender
-              << " | Train ID: " << node->passenger.trainID
-              << " | Compartment: " << (node->passenger.gender == 'F' || node->passenger.gender == 'f'
-                                        ? "Female Compartment"
-                                        : "Male General Compartment")
-              << "\n";
-
+              << " | Train ID: " << node->passenger.trainID << "\n";
     printInOrder(node->right);
 }
 
 BSTNode* PassengerTree::findMin(BSTNode* node) {
-    while (node && node->left != NULL) {
-        node = node->left;
-    }
+    while (node && node->left != NULL) node = node->left;
     return node;
 }
 
@@ -152,140 +249,68 @@ bool PassengerTree::removePassenger(std::string name, int tID, Passenger &delete
     return found;
 }
 
-void PassengerTree::insert(Passenger p) {
-    root = insertRec(root, p);
-}
-
-void PassengerTree::display() {
-    printInOrder(root);
-}
-
-TrainList::TrainList() {
-    head = NULL;
-}
-
-TrainList::~TrainList() {
-    Node<Train>* temp;
-    while (head != NULL) {
-        temp = head;
-        head = head->next;
-        delete temp;
-    }
-}
-
-// Updated to insert nodes at the end (tail) of the list
-void TrainList::insert(Train t) {
-    Node<Train>* newNode = new Node<Train>(t);
-    if (head == NULL) {
-        head = newNode;
-    } else {
-        Node<Train>* temp = head;
-        while (temp->next != NULL) {
-            temp = temp->next;
-        }
-        temp->next = newNode;
-    }
-}
-
-Node<Train>* TrainList::getHead() {
-    return head;
-}
-
-void TrainList::display() {
-    Node<Train>* temp = head;
-    while (temp != NULL) {
-        int hours = temp->data.departureTime / 100;
-        int mins = temp->data.departureTime % 100;
-
-        std::cout << "Train ID: " << temp->data.trainID
-                  << " | Destination: " << temp->data.division
-                  << " | Departure: " << (hours < 10 ? "0" : "") << hours << ":" << (mins < 10 ? "0" : "") << mins
-                  << " | Female Compartment Seats: " << temp->data.femaleSeats
-                  << " | Male General Compartment Seats: " << temp->data.maleSeats << "\n";
-        temp = temp->next;
-    }
-}
+void PassengerTree::insert(Passenger p) { root = insertRec(root, p); }
+void PassengerTree::display() { printInOrder(root); }
 
 void RailwaySystem::addTrain(int id, std::string div, int depTime, int fSeats, int mSeats) {
-    if (id >= 1 && id <= 20) {
-        trains.insert(Train(id, div, depTime, fSeats, mSeats));
-    }
+    Train t(id, div, depTime, fSeats, mSeats);
+    sortedArrayTrains.insert(t);
+    sortedLLTrains.insertSortedByTime(t);
 }
 
 void RailwaySystem::showTrains() {
-    trains.display();
+    std::cout << "\n ALL TRAINS\n";
+    sortedArrayTrains.display();
+}
+
+void RailwaySystem::showTrainsSortedByTime() {
+    std::cout << "\nALL TRAINS \n";
+    sortedLLTrains.display();
 }
 
 void RailwaySystem::searchByIdOrDestination(int id, std::string div) {
-    Node<Train>* temp = trains.getHead();
     bool found = false;
-    while (temp != NULL) {
-        if (temp->data.trainID == id || temp->data.division == div) {
-            int hours = temp->data.departureTime / 100;
-            int mins = temp->data.departureTime % 100;
-
-            std::cout << "Train Found! ID: " << temp->data.trainID
-                      << " | Destination: " << temp->data.division
-                      << " | Departure: " << (hours < 10 ? "0" : "") << hours << ":" << (mins < 10 ? "0" : "") << mins
-                      << " | Female Seats: " << temp->data.femaleSeats
-                      << " | Male Seats: " << temp->data.maleSeats << "\n";
+    for (int i = 0; i < sortedArrayTrains.getSize(); i++) {
+        Train t = sortedArrayTrains.getAt(i);
+        if (t.trainID == id || t.division == div) {
+            std::cout << "Train Found! ID: " << t.trainID << " | Dest: " << t.division << "\n";
             found = true;
         }
-        temp = temp->next;
     }
-    if (!found) {
-        std::cout << "No trains found matching the given Train ID or Destination.\n";
-    }
+    if (!found) std::cout << "No trains found.\n";
 }
 
 void RailwaySystem::searchByTimeOrDestination(int depTime, std::string div) {
-    Node<Train>* temp = trains.getHead();
     bool found = false;
-    while (temp != NULL) {
-        if (temp->data.departureTime == depTime || temp->data.division == div) {
-            int hours = temp->data.departureTime / 100;
-            int mins = temp->data.departureTime % 100;
-
-            std::cout << "Train Found! ID: " << temp->data.trainID
-                      << " | Destination: " << temp->data.division
-                      << " | Departure: " << (hours < 10 ? "0" : "") << hours << ":" << (mins < 10 ? "0" : "") << mins
-                      << " | Female Seats: " << temp->data.femaleSeats
-                      << " | Male Seats: " << temp->data.maleSeats << "\n";
+    for (int i = 0; i < sortedArrayTrains.getSize(); i++) {
+        Train t = sortedArrayTrains.getAt(i);
+        if (t.departureTime == depTime || t.division == div) {
+            std::cout << "Train Found! ID: " << t.trainID << " | Time: " << t.departureTime << "\n";
             found = true;
         }
-        temp = temp->next;
     }
-    if (!found) {
-        std::cout << "No trains found matching the given Departure Time or Destination.\n";
-    }
+    if (!found) std::cout << "No trains found.\n";
 }
 
 void RailwaySystem::bookTicket(Passenger p) {
-    Node<Train>* temp = trains.getHead();
-    while (temp != NULL) {
-        if (temp->data.trainID == p.trainID) {
-            bool isFemale = (p.gender == 'F' || p.gender == 'f');
-
-            if (isFemale && temp->data.femaleSeats > 0) {
-                temp->data.femaleSeats--;
-                passengerRecords.insert(p);
-                std::cout << "\nBooking successful for " << p.name << "! Assigned to: Female Compartment\n";
-            }
-            else if (!isFemale && temp->data.maleSeats > 0) {
-                temp->data.maleSeats--;
-                passengerRecords.insert(p);
-                std::cout << "\nBooking successful for " << p.name << "! Assigned to: Male General Compartment\n";
-            }
-            else {
-                std::cout << "\nNo seats available in the requested compartment for Train " << p.trainID
-                          << ". Adding " << p.name << " to the priority waiting list.\n";
-                waitingList.enqueue(p);
-            }
-            return;
+    Train* t = sortedArrayTrains.findByID(p.trainID);
+    if (t != NULL) {
+        bool isFemale = (p.gender == 'F' || p.gender == 'f');
+        if (isFemale && t->femaleSeats > 0) {
+            t->femaleSeats--;
+            passengerRecords.insert(p);
+            std::cout << "\nBooking successful for " << p.name << " (Female Compartment)\n";
+        } else if (!isFemale && t->maleSeats > 0) {
+            t->maleSeats--;
+            passengerRecords.insert(p);
+            std::cout << "\nBooking successful for " << p.name << " (Male Compartment)\n";
+        } else {
+            std::cout << "\nNo seats available. Adding " << p.name << " to priority waiting list.\n";
+            waitingList.enqueue(p);
         }
-        temp = temp->next;
+    } else {
+        std::cout << "Invalid Train ID.\n";
     }
-    std::cout << "Invalid Train ID.\n";
 }
 
 void RailwaySystem::cancelTicket(std::string name, int tID) {
@@ -293,32 +318,26 @@ void RailwaySystem::cancelTicket(std::string name, int tID) {
     bool isCancelled = passengerRecords.removePassenger(name, tID, deletedPassenger);
 
     if (isCancelled) {
-        Node<Train>* temp = trains.getHead();
-        while (temp != NULL) {
-            if (temp->data.trainID == tID) {
-                if (deletedPassenger.gender == 'F' || deletedPassenger.gender == 'f') {
-                    temp->data.femaleSeats++;
-                    std::cout << "\nTicket successfully cancelled for " << name
-                              << ". Returned 1 seat to Female Compartment (Train " << tID << ").\n";
-                } else {
-                    temp->data.maleSeats++;
-                    std::cout << "\nTicket successfully cancelled for " << name
-                              << ". Returned 1 seat to Male General Compartment (Train " << tID << ").\n";
-                }
-                return;
-            }
-            temp = temp->next;
+        cancellationLog.push(deletedPassenger);
+
+        Train* t = sortedArrayTrains.findByID(tID);
+        if (t != NULL) {
+            if (deletedPassenger.gender == 'F' || deletedPassenger.gender == 'f') t->femaleSeats++;
+            else t->maleSeats++;
+            std::cout << "\nTicket successfully cancelled for " << name << ". Recorded to stack log.\n";
         }
     } else {
-        std::cout << "\nCancellation failed: No confirmed passenger record found with Name '"
-                  << name << "' on Train ID " << tID << ".\n";
+        std::cout << "\nCancellation failed: Record not found.\n";
     }
 }
 
 void RailwaySystem::showPassengers() {
     std::cout << "\n CONFIRMED PASSENGER RECORDS \n";
     passengerRecords.display();
-
     std::cout << "\n WAITING LIST RECORDS \n";
     waitingList.displayWaitingList();
+}
+
+void RailwaySystem::showCancellationHistory() {
+    cancellationLog.displayHistory();
 }

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 
+// Passenger Class
 class Passenger {
 public:
     std::string name;
@@ -28,39 +29,18 @@ public:
     Train(int id, std::string div, int depTime, int fSeats, int mSeats);
 };
 
-class SortedArrayList {
-private:
-    Train arr[50];
-    int count;
-public:
-    SortedArrayList();
-    void insert(Train t);
-    Train* findByID(int id);
-    void display();
-    int getSize();
-    Train getAt(int index);
-};
-
-class SortedLLNode {
+// Linked List Node for Trains
+class TrainNode {
 public:
     Train data;
-    SortedLLNode* next;
-    SortedLLNode(Train val) {
-        data = val;
+    TrainNode* next;
+    TrainNode(Train t) {
+        data = t;
         next = NULL;
     }
 };
 
-class SortedLinkedList {
-private:
-    SortedLLNode* head;
-public:
-    SortedLinkedList();
-    ~SortedLinkedList();
-    void insertSortedByTime(Train t);
-    void display();
-};
-
+// Linked List Node for Stack
 class StackNode {
 public:
     Passenger data;
@@ -71,69 +51,32 @@ public:
     }
 };
 
-class CancellationStack {
-private:
-    StackNode* top;
+// Linked List Node for Confirmed Passengers
+class PassengerNode {
 public:
-    CancellationStack();
-    ~CancellationStack();
-    void push(Passenger p);
-    Passenger pop();
-    bool isEmpty();
-    void displayHistory();
-};
-
-// Existing Priority Queue and BST components
-class WaitingPriorityQueue {
-private:
-    Passenger arr[50];
-    int count;
-public:
-    WaitingPriorityQueue();
-    void enqueue(Passenger p);
-    Passenger dequeue();
-    bool isEmpty();
-    void displayWaitingList();
-};
-
-class BSTNode {
-public:
-    Passenger passenger;
-    BSTNode* left;
-    BSTNode* right;
-    BSTNode(Passenger p) {
-        passenger = p;
-        left = NULL;
-        right = NULL;
+    Passenger data;
+    PassengerNode* next;
+    PassengerNode(Passenger p) {
+        data = p;
+        next = NULL;
     }
-};
-
-class PassengerTree {
-private:
-    BSTNode* root;
-    BSTNode* insertRec(BSTNode* node, Passenger p);
-    void printInOrder(BSTNode* node);
-    BSTNode* findMin(BSTNode* node);
-    BSTNode* deleteRec(BSTNode* node, std::string name, int tID, bool &found, Passenger &deletedPassenger);
-public:
-    PassengerTree();
-    void insert(Passenger p);
-    void display();
-    bool removePassenger(std::string name, int tID, Passenger &deletedPassenger);
 };
 
 class RailwaySystem {
 private:
-    SortedArrayList sortedArrayTrains;  // Array-Based Sorted List
-    SortedLinkedList sortedLLTrains;    // Linked List-Based Sorted List
-    CancellationStack cancellationLog;  // Stack Data Structure
-    WaitingPriorityQueue waitingList;   // Priority Queue
-    PassengerTree passengerRecords;     // BST
+    TrainNode* trainHead;
+    PassengerNode* passengerHead;
+    Passenger waitingQueue[50];
+    int queueCount;
+    StackNode* stackTop;
+
 public:
+    RailwaySystem();
+    ~RailwaySystem();
+
     void addTrain(int id, std::string div, int depTime, int fSeats, int mSeats);
-    void showTrains();
-    void showTrainsSortedByTime();
-    void searchByIdOrDestination(int id, std::string div);
+    void showTrainsByID();
+    void showTrainsByTime();
     void searchByTimeOrDestination(int depTime, std::string div);
     void bookTicket(Passenger p);
     void cancelTicket(std::string name, int tID);
